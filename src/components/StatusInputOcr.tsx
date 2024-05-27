@@ -28,6 +28,7 @@ export default function StatusInputOcr(props: {
         alt=""
         id="screenshot"
         width={150}
+        hidden
         style={{ paddingTop: "1em", margin: "0-100%" }}
       />
     </div>
@@ -65,6 +66,7 @@ function ocr_screenshot(
       "screenshot"
     ) as HTMLImageElement;
     img_element.src = preview.toDataURL();
+    img_element.hidden = false;
     const ocr_infos = [
       {
         x: 100,

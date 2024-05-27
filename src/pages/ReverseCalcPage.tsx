@@ -19,6 +19,7 @@ export default function ReverseCalcPage() {
       "screenshot"
     ) as HTMLImageElement;
     img_element.src = "";
+    img_element.hidden = true;
   }
 
   return (
