@@ -12,6 +12,10 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,json}"],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+      },
       manifest: {
         name: "Wonder Scale",
         short_name: "Wonder Scale",
