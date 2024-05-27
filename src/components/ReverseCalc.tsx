@@ -25,12 +25,14 @@ export default function ReverseCalc(props: {
       <h3>最終試験必要点数</h3>
       <table align="center">
         <thead>
-          <th>評価</th>
-          <th>点数</th>
+          <tr>
+            <th>評価</th>
+            <th>点数</th>
+          </tr>
         </thead>
         <tbody>
           {reverse_calcs.map((calc) => (
-            <tr>
+            <tr key={calc.rank}>
               <td>{calc.rank}</td>
               <td>{calc.calc_text}</td>
             </tr>
