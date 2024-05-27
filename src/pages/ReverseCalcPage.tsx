@@ -7,10 +7,8 @@ export default function ReverseCalcPage() {
   const [vocal, setVocal] = useState(initial_status);
   const [dance, setDance] = useState(initial_status);
   const [visual, setVisual] = useState(initial_status);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [rank, setRank] = useState(1);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [before_exam, setBeforeExam] = useState(true);
+  const rank = 1;
+  const before_exam = true;
 
   return (
     <div className="ReverseCalcPage">
