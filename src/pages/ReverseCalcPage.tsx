@@ -20,7 +20,7 @@ export default function ReverseCalcPage() {
                 <Box display={"flex"} justifyContent={"center"}>
                   <Box sx={{ width: "90%", maxWidth: 150 }}>
                     <TextField
-                      id="outlined-number"
+                      id="input-vocal"
                       label="Vocal"
                       type="number"
                       inputMode="numeric"
@@ -37,7 +37,7 @@ export default function ReverseCalcPage() {
                 <Box display={"flex"} justifyContent={"center"}>
                   <Box sx={{ width: "90%", maxWidth: 150 }}>
                     <TextField
-                      id="outlined-number"
+                      id="input-dance"
                       label="Dance"
                       type="number"
                       inputMode="numeric"
@@ -54,7 +54,7 @@ export default function ReverseCalcPage() {
                 <Box display={"flex"} justifyContent={"center"}>
                   <Box sx={{ width: "90%", maxWidth: 150 }}>
                     <TextField
-                      id="outlined-number"
+                      id="input-visual"
                       label="Visual"
                       type="number"
                       inputMode="numeric"
