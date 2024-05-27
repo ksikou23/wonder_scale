@@ -23,6 +23,7 @@ export default function ReverseCalcPage() {
                       id="outlined-number"
                       label="Vocal"
                       type="number"
+                      inputMode="numeric"
                       defaultValue={vocal}
                       onChange={(e) => setVocal(Number(e.target.value))}
                       variant="outlined"
@@ -39,6 +40,7 @@ export default function ReverseCalcPage() {
                       id="outlined-number"
                       label="Dance"
                       type="number"
+                      inputMode="numeric"
                       defaultValue={dance}
                       onChange={(e) => setDance(Number(e.target.value))}
                       variant="outlined"
@@ -55,6 +57,7 @@ export default function ReverseCalcPage() {
                       id="outlined-number"
                       label="Visual"
                       type="number"
+                      inputMode="numeric"
                       defaultValue={visual}
                       onChange={(e) => setVisual(Number(e.target.value))}
                       variant="outlined"
