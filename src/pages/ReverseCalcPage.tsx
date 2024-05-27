@@ -1,14 +1,25 @@
-import { Box, Divider, Grid, TextField } from "@mui/material";
+import { Box, Button, Divider, Grid, TextField } from "@mui/material";
 import { useState } from "react";
 import ReverseCalc from "../components/ReverseCalc";
+import StatusInputOcr from "../components/StatusInputOcr";
 
 export default function ReverseCalcPage() {
-  const initial_status = null as unknown as number;
+  const initial_status = 0;
   const [vocal, setVocal] = useState(initial_status);
   const [dance, setDance] = useState(initial_status);
   const [visual, setVisual] = useState(initial_status);
   const rank = 1;
   const before_exam = true;
+
+  function reset_status() {
+    setVocal(0);
+    setDance(initial_status);
+    setVisual(initial_status);
+    const img_element = document.getElementById(
+      "screenshot"
+    ) as HTMLImageElement;
+    img_element.src = "";
+  }
 
   return (
     <div className="ReverseCalcPage">
@@ -25,6 +36,7 @@ export default function ReverseCalcPage() {
                       type="number"
                       inputProps={{ inputMode: "numeric" }}
                       defaultValue={vocal}
+                      value={(vocal || vocal === 0) ?? ""}
                       onChange={(e) => setVocal(Number(e.target.value))}
                       variant="outlined"
                       focused
@@ -42,6 +54,7 @@ export default function ReverseCalcPage() {
                       type="number"
                       inputProps={{ inputMode: "numeric" }}
                       defaultValue={dance}
+                      value={(dance || dance === 0) ?? ""}
                       onChange={(e) => setDance(Number(e.target.value))}
                       variant="outlined"
                       focused
@@ -59,6 +72,7 @@ export default function ReverseCalcPage() {
                       type="number"
                       inputProps={{ inputMode: "numeric" }}
                       defaultValue={visual}
+                      value={(visual || visual === 0) ?? ""}
                       onChange={(e) => setVisual(Number(e.target.value))}
                       variant="outlined"
                       focused
@@ -70,6 +84,12 @@ export default function ReverseCalcPage() {
             </Grid>
           </Box>
         </Box>
+        <Button onClick={reset_status}>Reset</Button>
+        <StatusInputOcr
+          setVocal={setVocal}
+          setDance={setDance}
+          setVisual={setVisual}
+        />
       </div>
       <Divider sx={{ paddingTop: "2em" }} />
       <ReverseCalc
