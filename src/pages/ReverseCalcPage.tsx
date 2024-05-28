@@ -15,11 +15,11 @@ export default function ReverseCalcPage() {
     setVocal(0);
     setDance(initial_status);
     setVisual(initial_status);
-    const img_element = document.getElementById(
-      "screenshot"
-    ) as HTMLImageElement;
-    img_element.src = "";
-    img_element.hidden = true;
+    ["ocr-vocal", "ocr-dance", "ocr-visual"].forEach((id) => {
+      const img_element = document.getElementById(id) as HTMLImageElement;
+      img_element.src = "";
+      img_element.hidden = true;
+    });
   }
 
   return (
@@ -36,7 +36,6 @@ export default function ReverseCalcPage() {
                       label="Vocal"
                       type="number"
                       inputProps={{ inputMode: "numeric" }}
-                      defaultValue={vocal}
                       value={(vocal || vocal === 0) ?? ""}
                       onChange={(e) => setVocal(Number(e.target.value))}
                       variant="outlined"
@@ -54,7 +53,6 @@ export default function ReverseCalcPage() {
                       label="Dance"
                       type="number"
                       inputProps={{ inputMode: "numeric" }}
-                      defaultValue={dance}
                       value={(dance || dance === 0) ?? ""}
                       onChange={(e) => setDance(Number(e.target.value))}
                       variant="outlined"
@@ -72,7 +70,6 @@ export default function ReverseCalcPage() {
                       label="Visual"
                       type="number"
                       inputProps={{ inputMode: "numeric" }}
-                      defaultValue={visual}
                       value={(visual || visual === 0) ?? ""}
                       onChange={(e) => setVisual(Number(e.target.value))}
                       variant="outlined"

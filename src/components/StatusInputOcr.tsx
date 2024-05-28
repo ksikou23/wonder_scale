@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import Image from "image-js";
 import Tesseract from "tesseract.js";
 
@@ -22,15 +22,23 @@ export default function StatusInputOcr(props: {
           hidden
         />
       </Button>
-      <br />
-      <img
-        src=""
-        alt=""
-        id="screenshot"
-        width={150}
-        hidden
-        style={{ paddingTop: "1em", margin: "0-100%" }}
-      />
+      <div className="ocr-debug" style={{ paddingTop: "1em" }}>
+        <Box display={"flex"} justifyContent={"center"}>
+          <Box width={500} maxWidth={"100%"}>
+            <Grid container>
+              <Grid item key={"ocr-vocal"} sm={4} xs={12}>
+                <img src="" alt="" id="ocr-vocal" width={100} hidden />
+              </Grid>
+              <Grid item key={"ocr-dance"} sm={4} xs={12}>
+                <img src="" alt="" id="ocr-dance" width={100} hidden />
+              </Grid>
+              <Grid item key={"ocr-visual"} sm={4} xs={12}>
+                <img src="" alt="" id="ocr-visual" width={100} hidden />
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </div>
     </div>
   );
 }
@@ -41,9 +49,6 @@ function ocr_screenshot(
   setVisual: React.Dispatch<React.SetStateAction<number>>,
   event: React.ChangeEvent<HTMLInputElement>
 ) {
-  console.log("read screenshot");
-  console.log(event);
-
   // get screenshot image
   if (event.target.files === null || event.target.files?.length === 0) {
     console.log("no file selected");
@@ -52,46 +57,55 @@ function ocr_screenshot(
   const file = event.target.files[0];
   // TODO file-format validation
 
-  // render
-  const img_element = document.getElementById("screenshot") as HTMLImageElement;
-  const img_url = URL.createObjectURL(file);
-  img_element.src = img_url;
-
   // load image
+  const img_url = URL.createObjectURL(file);
   Image.load(img_url).then((image) => {
-    // resize and crop
-    const resized = image.resize({ width: 400 });
-    const preview = resized.crop({ x: 80, y: 378, width: 65, height: 85 });
-    const img_element = document.getElementById(
-      "screenshot"
-    ) as HTMLImageElement;
-    img_element.src = preview.toDataURL();
-    img_element.hidden = false;
+    // calc ratio
+    const resize_base_width = 400;
+    let resize_ratio = image.width / resize_base_width;
+    if (image.width < resize_base_width) {
+      resize_ratio = 1;
+      console.log("image is small");
+    }
+
+    // make image for ocr
+    const binary_img = image
+      .grey()
+      .mask({ threshold: 0.99 })
+      .invert()
+      .resize({ width: resize_base_width * resize_ratio });
+
+    // ocr definition
     const ocr_infos = [
       {
-        x: 100,
-        y: 380,
-        width: 40,
-        height: 15,
+        x: 100 * resize_ratio,
+        y: 380 * resize_ratio,
+        width: 40 * resize_ratio,
+        height: 15 * resize_ratio,
         setValue: setVocal,
+        id: "ocr-vocal",
       },
       {
-        x: 100,
-        y: 413,
-        width: 40,
-        height: 15,
+        x: 100 * resize_ratio,
+        y: 413 * resize_ratio,
+        width: 40 * resize_ratio,
+        height: 15 * resize_ratio,
         setValue: setDance,
+        id: "ocr-dance",
       },
       {
-        x: 100,
-        y: 445,
-        width: 40,
-        height: 15,
+        x: 100 * resize_ratio,
+        y: 445 * resize_ratio,
+        width: 40 * resize_ratio,
+        height: 15 * resize_ratio,
         setValue: setVisual,
+        id: "ocr-visual",
       },
     ];
+
+    // execute ocr
     ocr_infos.forEach((ocr_info) => {
-      const cropped = resized.crop({
+      const cropped = binary_img.crop({
         x: ocr_info.x,
         y: ocr_info.y,
         width: ocr_info.width,
@@ -99,6 +113,14 @@ function ocr_screenshot(
       });
       const img_url = cropped.toDataURL();
       ocr_screenshot1(img_url, ocr_info.setValue);
+
+      // for debug
+      const img_element = document.getElementById(
+        ocr_info.id
+      ) as HTMLImageElement;
+      img_element.src = img_url;
+      // set false to show image
+      img_element.hidden = false;
     });
   });
 }
@@ -107,18 +129,17 @@ function ocr_screenshot1(
   img_url: string,
   setValue: React.Dispatch<React.SetStateAction<number>>
 ) {
-  Tesseract.recognize(img_url, "eng").then((e) => {
-    // exit if no text data
-    if (e.data.text.length === 0) {
-      setValue(0);
-      return;
-    }
-    const value = e.data.words[0]?.text.replace("pt", "").replace(",", "");
-    // exit if not number
-    if (isNaN(Number(value))) {
-      setValue(0);
-      return;
-    }
-    setValue(Number(value));
+  Tesseract.createWorker("eng+jpn").then((worker) => {
+    worker.setParameters({
+      tessedit_char_whitelist: "0123456789",
+      tessedit_pageseg_mode: Tesseract.PSM.SINGLE_LINE,
+    });
+    worker.recognize(img_url).then((result) => {
+      if (isNaN(Number(result.data.text))) {
+        setValue(0);
+      } else {
+        setValue(Number(result.data.text));
+      }
+    });
   });
 }

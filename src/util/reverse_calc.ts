@@ -41,10 +41,6 @@ export default function reverse_calc(
   const status_score = Math.floor(status_sum * 2.3);
   const exam_score = goal_score - get_rank_score(rank) - status_score;
 
-  console.log("status_sum", status_sum);
-  console.log("status_score", status_score);
-  console.log("exam_score", exam_score);
-
   const threshold = [
     5000 * 0.3, // 1500
     5000 * 0.3 + 5000 * 0.15, // 2250
