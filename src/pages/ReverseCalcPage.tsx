@@ -15,7 +15,7 @@ export default function ReverseCalcPage() {
     setVocal(0);
     setDance(initial_status);
     setVisual(initial_status);
-    ["ocr-vocal", "ocr-dance", "ocr-visual"].forEach((id) => {
+    ["ocr-base", "ocr-vocal", "ocr-dance", "ocr-visual"].forEach((id) => {
       const img_element = document.getElementById(id) as HTMLImageElement;
       img_element.src = "";
       img_element.hidden = true;

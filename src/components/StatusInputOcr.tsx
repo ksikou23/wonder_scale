@@ -23,6 +23,7 @@ export default function StatusInputOcr(props: {
         />
       </Button>
       <div className="ocr-debug" style={{ paddingTop: "1em" }}>
+        <img id="ocr-base" width="400" hidden />
         <Box display={"flex"} justifyContent={"center"}>
           <Box width={500} maxWidth={"100%"}>
             <Grid container>
@@ -60,44 +61,57 @@ function ocr_screenshot(
   // load image
   const img_url = URL.createObjectURL(file);
   Image.load(img_url).then((image) => {
-    // calc ratio
-    const resize_base_width = 400;
-    let resize_ratio = image.width / resize_base_width;
-    if (image.width < resize_base_width) {
-      resize_ratio = 1;
-      console.log("image is small");
-    }
-
     // make image for ocr
-    const binary_img = image
-      .grey()
-      .mask({ threshold: 0.99 })
-      .invert()
-      .resize({ width: resize_base_width * resize_ratio });
+    const binary_img = image.grey().mask({ threshold: 0.99 }).invert();
+
+    // crop status area
+    let ocr_img = null;
+    const aspect_ratio = binary_img.height / binary_img.width;
+    const aspect_ratio_threshold = 1.6; // TODO
+    if (aspect_ratio >= aspect_ratio_threshold) {
+      // for mobile phone
+      ocr_img = binary_img.clone().crop({
+        x: binary_img.width * 0.15,
+        y: binary_img.height * 0.71,
+        width: binary_img.width * 0.2,
+        height: binary_img.height * 0.17,
+      });
+    } else {
+      // for tablet
+      ocr_img = binary_img.clone().crop({
+        x: binary_img.width * 0.24,
+        y: binary_img.height * 0.71,
+        width: binary_img.width * 0.18,
+        height: binary_img.height * 0.17,
+      });
+    }
+    const img_element = document.getElementById("ocr-base") as HTMLImageElement;
+    img_element.src = ocr_img.toDataURL();
+    img_element.hidden = true;
 
     // ocr definition
     const ocr_infos = [
       {
-        x: 100 * resize_ratio,
-        y: 380 * resize_ratio,
-        width: 40 * resize_ratio,
-        height: 15 * resize_ratio,
+        x: 0,
+        y: 0,
+        width: ocr_img.width,
+        height: ocr_img.height / 3,
         setValue: setVocal,
         id: "ocr-vocal",
       },
       {
-        x: 100 * resize_ratio,
-        y: 413 * resize_ratio,
-        width: 40 * resize_ratio,
-        height: 15 * resize_ratio,
+        x: 0,
+        y: ocr_img.height / 3,
+        width: ocr_img.width,
+        height: ocr_img.height / 3,
         setValue: setDance,
         id: "ocr-dance",
       },
       {
-        x: 100 * resize_ratio,
-        y: 445 * resize_ratio,
-        width: 40 * resize_ratio,
-        height: 15 * resize_ratio,
+        x: 0,
+        y: (ocr_img.height / 3) * 2,
+        width: ocr_img.width,
+        height: ocr_img.height / 3,
         setValue: setVisual,
         id: "ocr-visual",
       },
@@ -105,7 +119,7 @@ function ocr_screenshot(
 
     // execute ocr
     ocr_infos.forEach((ocr_info) => {
-      const cropped = binary_img.crop({
+      const cropped = ocr_img.crop({
         x: ocr_info.x,
         y: ocr_info.y,
         width: ocr_info.width,
