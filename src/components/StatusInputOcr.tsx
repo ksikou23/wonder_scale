@@ -1,6 +1,13 @@
 import { Box, Button, Grid } from "@mui/material";
 import Image from "image-js";
 import Tesseract from "tesseract.js";
+import {
+  dance_color,
+  equal_color,
+  near_color,
+  visual_color,
+  vocal_color,
+} from "../util/color";
 
 export default function StatusInputOcr(props: {
   setVocal: React.Dispatch<React.SetStateAction<number>>;
@@ -24,6 +31,7 @@ export default function StatusInputOcr(props: {
       </Button>
       <div className="ocr-debug" style={{ paddingTop: "1em" }}>
         <img id="ocr-base" width="400" hidden />
+        <canvas id="canvas-ocr" />
         <Box display={"flex"} justifyContent={"center"}>
           <Box width={500} maxWidth={"100%"}>
             <Grid container>
@@ -60,58 +68,40 @@ function ocr_screenshot(
 
   // load image
   const img_url = URL.createObjectURL(file);
-  Image.load(img_url).then((image) => {
+  Image.load(img_url).then(async (image) => {
+    const position = await get_position(image);
+    console.log(position);
+
     // make image for ocr
     const binary_img = image.grey().mask({ threshold: 0.99 }).invert();
 
-    // crop status area
-    let ocr_img = null;
-    const aspect_ratio = binary_img.height / binary_img.width;
-    const aspect_ratio_threshold = 1.6; // TODO
-    if (aspect_ratio >= aspect_ratio_threshold) {
-      // for mobile phone
-      ocr_img = binary_img.clone().crop({
-        x: binary_img.width * 0.15,
-        y: binary_img.height * 0.71,
-        width: binary_img.width * 0.2,
-        height: binary_img.height * 0.17,
-      });
-    } else {
-      // for tablet
-      ocr_img = binary_img.clone().crop({
-        x: binary_img.width * 0.24,
-        y: binary_img.height * 0.71,
-        width: binary_img.width * 0.18,
-        height: binary_img.height * 0.17,
-      });
-    }
-    const img_element = document.getElementById("ocr-base") as HTMLImageElement;
-    img_element.src = ocr_img.toDataURL();
-    img_element.hidden = true;
-
     // ocr definition
+    const crop_width = Math.floor(image.width * 0.17);
+    const shift_x = Math.floor(image.width * 0.015);
+    const crop_height = Math.floor((position.visual.y - position.dance.y) / 2);
+    const plus_y = Math.min(20, Math.floor(image.height * 0.01));
     const ocr_infos = [
       {
-        x: 0,
-        y: 0,
-        width: ocr_img.width,
-        height: ocr_img.height / 3,
+        x: position.vocal.x + shift_x,
+        y: position.vocal.y - crop_height,
+        width: crop_width,
+        height: crop_height + plus_y,
         setValue: setVocal,
         id: "ocr-vocal",
       },
       {
-        x: 0,
-        y: ocr_img.height / 3,
-        width: ocr_img.width,
-        height: ocr_img.height / 3,
+        x: position.dance.x + shift_x,
+        y: position.dance.y - crop_height,
+        width: crop_width,
+        height: crop_height + plus_y,
         setValue: setDance,
         id: "ocr-dance",
       },
       {
-        x: 0,
-        y: (ocr_img.height / 3) * 2,
-        width: ocr_img.width,
-        height: ocr_img.height / 3,
+        x: position.visual.x + shift_x,
+        y: position.visual.y - crop_height,
+        width: crop_width,
+        height: crop_height + plus_y,
         setValue: setVisual,
         id: "ocr-visual",
       },
@@ -119,7 +109,7 @@ function ocr_screenshot(
 
     // execute ocr
     ocr_infos.forEach((ocr_info) => {
-      const cropped = ocr_img.crop({
+      const cropped = binary_img.crop({
         x: ocr_info.x,
         y: ocr_info.y,
         width: ocr_info.width,
@@ -156,4 +146,110 @@ function ocr_screenshot1(
       }
     });
   });
+}
+
+function loadImage(image: Image) {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement("img");
+    img.src = image.toDataURL();
+    img.onload = () => {
+      resolve(img);
+    };
+    img.onerror = () => {
+      reject(new Error("Failed to load image"));
+    };
+  });
+}
+
+async function get_position(image: Image) {
+  const img_image = (await loadImage(image)) as HTMLImageElement;
+  const canvas = document.createElement("canvas");
+  canvas.width = image.width;
+  canvas.height = image.height;
+  canvas.getContext("2d")?.drawImage(img_image, 0, 0);
+  const image_data =
+    canvas.getContext("2d")?.getImageData(0, 0, canvas.width, canvas.height) ??
+    new ImageData(0, 0);
+
+  // from lower-left to upper-right
+  const lower_left_vocal = { x: 0, y: image_data.height };
+  const lower_left_dance = { x: 0, y: image_data.height };
+  const lower_left_visual = { x: 0, y: image_data.height };
+  let break_vocal = false;
+  let break_dance = false;
+  let break_visual = false;
+
+  // find color
+  index_for: for (
+    let y = image_data.height;
+    y >= image_data.height * 0.5;
+    y--
+  ) {
+    for (let x = 0; x < Math.floor(image_data.width * 0.5); x++) {
+      if (break_vocal && break_dance && break_visual) {
+        break index_for;
+      }
+      const index = (y * image_data.width + x) * 4;
+      const index_color = {
+        r: image_data.data[index],
+        g: image_data.data[index + 1],
+        b: image_data.data[index + 2],
+      };
+      if (!break_vocal && equal_color(index_color, vocal_color)) {
+        lower_left_vocal.x = x;
+        lower_left_vocal.y = y;
+        break_vocal = true;
+      }
+      if (!break_dance && equal_color(index_color, dance_color)) {
+        lower_left_dance.x = x;
+        lower_left_dance.y = y;
+        break_dance = true;
+      }
+      if (!break_visual && equal_color(index_color, visual_color)) {
+        lower_left_visual.x = x;
+        lower_left_visual.y = y;
+        break_visual = true;
+      }
+    }
+  }
+
+  // if not found, find nearest color
+  index_for: for (
+    let y = image_data.height;
+    y >= image_data.height * 0.5;
+    y--
+  ) {
+    for (let x = 0; x < Math.floor(image_data.width * 0.5); x++) {
+      if (break_vocal && break_dance && break_visual) {
+        break index_for;
+      }
+      const index = (y * image_data.width + x) * 4;
+      const index_color = {
+        r: image_data.data[index],
+        g: image_data.data[index + 1],
+        b: image_data.data[index + 2],
+      };
+      if (!break_vocal && near_color(index_color, vocal_color)) {
+        lower_left_vocal.x = x;
+        lower_left_vocal.y = y;
+        break_vocal = true;
+      }
+      if (!break_dance && near_color(index_color, dance_color)) {
+        lower_left_dance.x = x;
+        lower_left_dance.y = y;
+        break_dance = true;
+      }
+      if (!break_visual && near_color(index_color, visual_color)) {
+        lower_left_visual.x = x;
+        lower_left_visual.y = y;
+        break_visual = true;
+      }
+    }
+  }
+
+  return {
+    vocal: lower_left_vocal,
+    dance: lower_left_dance,
+    visual: lower_left_visual,
+  };
 }
