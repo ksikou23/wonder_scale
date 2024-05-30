@@ -115,7 +115,7 @@ function ocr_screenshot(
         height: ocr_info.height,
       });
       const img_url = cropped.toDataURL();
-      ocr_screenshot1(img_url, ocr_info.setValue);
+      ocr_status(img_url, ocr_info.setValue);
 
       // for debug
       const img_element = document.getElementById(
@@ -128,7 +128,7 @@ function ocr_screenshot(
   });
 }
 
-function ocr_screenshot1(
+function ocr_status(
   img_url: string,
   setValue: React.Dispatch<React.SetStateAction<number>>
 ) {
