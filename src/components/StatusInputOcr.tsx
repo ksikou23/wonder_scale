@@ -31,7 +31,6 @@ export default function StatusInputOcr(props: {
       </Button>
       <div className="ocr-debug" style={{ paddingTop: "1em" }}>
         <img id="ocr-base" width="400" hidden />
-        <canvas id="canvas-ocr" />
         <Box display={"flex"} justifyContent={"center"}>
           <Box width={500} maxWidth={"100%"}>
             <Grid container>
