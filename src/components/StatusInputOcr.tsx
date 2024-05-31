@@ -166,6 +166,19 @@ function loadImage(image: Image) {
 }
 
 async function get_position(image: Image) {
+  // get position from hard-coded definition
+  const position = get_hard_coded_position(image.width, image.height);
+  if (position) {
+    return {
+      vocal: position.vocal,
+      dance: position.dance,
+      visual: position.visual,
+      is_error: false,
+      from_hard_coded: true,
+    };
+  }
+
+  // if hard-coded position is not found, get position from sequential read
   const img_image = (await loadImage(image)) as HTMLImageElement;
   const canvas = document.createElement("canvas");
   canvas.width = image.width;
@@ -182,18 +195,6 @@ async function get_position(image: Image) {
   let break_vocal = false;
   let break_dance = false;
   let break_visual = false;
-
-  // get position from hard-coded definition
-  const position = get_hard_coded_position(image.width, image.height);
-  if (position) {
-    return {
-      vocal: position.vocal,
-      dance: position.dance,
-      visual: position.visual,
-      is_error: false,
-      from_hard_coded: true,
-    };
-  }
 
   // find color
   index_for: for (
