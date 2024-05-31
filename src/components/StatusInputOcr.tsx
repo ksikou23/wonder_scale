@@ -70,7 +70,7 @@ function ocr_screenshot(
   const img_url = URL.createObjectURL(file);
   Image.load(img_url).then(async (image) => {
     const position = await get_position(image);
-    console.log(position);
+    console.log("ocr-position", position);
     if (position.is_error) {
       console.log("position is not found");
       return;
