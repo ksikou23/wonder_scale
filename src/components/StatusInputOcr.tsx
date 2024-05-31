@@ -8,6 +8,7 @@ import {
   visual_color,
   vocal_color,
 } from "../util/color";
+import get_hard_coded_position from "../util/position";
 
 export default function StatusInputOcr(props: {
   setVocal: React.Dispatch<React.SetStateAction<number>>;
@@ -70,6 +71,10 @@ function ocr_screenshot(
   Image.load(img_url).then(async (image) => {
     const position = await get_position(image);
     console.log(position);
+    if (position.is_error) {
+      console.log("position is not found");
+      return;
+    }
 
     // make image for ocr
     const binary_img = image.grey().mask({ threshold: 0.99 }).invert();
@@ -178,13 +183,25 @@ async function get_position(image: Image) {
   let break_dance = false;
   let break_visual = false;
 
+  // get position from hard-coded definition
+  const position = get_hard_coded_position(image.width, image.height);
+  if (position) {
+    return {
+      vocal: position.vocal,
+      dance: position.dance,
+      visual: position.visual,
+      is_error: false,
+      from_hard_coded: true,
+    };
+  }
+
   // find color
   index_for: for (
     let y = image_data.height;
-    y >= image_data.height * 0.5;
+    y >= image_data.height * 0.6;
     y--
   ) {
-    for (let x = 0; x < Math.floor(image_data.width * 0.5); x++) {
+    for (let x = 0; x < Math.floor(image_data.width * 0.4); x++) {
       if (break_vocal && break_dance && break_visual) {
         break index_for;
       }
@@ -250,5 +267,7 @@ async function get_position(image: Image) {
     vocal: lower_left_vocal,
     dance: lower_left_dance,
     visual: lower_left_visual,
+    is_error: !(break_vocal && break_dance && break_visual),
+    from_hard_coded: false,
   };
 }
