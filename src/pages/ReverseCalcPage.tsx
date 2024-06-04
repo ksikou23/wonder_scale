@@ -1,4 +1,14 @@
-import { Box, Button, Divider, Grid, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import { useState } from "react";
 import ReverseCalc from "../components/ReverseCalc";
 import StatusInputOcr from "../components/StatusInputOcr";
@@ -8,13 +18,16 @@ export default function ReverseCalcPage() {
   const [vocal, setVocal] = useState(initial_status);
   const [dance, setDance] = useState(initial_status);
   const [visual, setVisual] = useState(initial_status);
-  const rank = 1;
+  const available_ranks = [1, 2, 3, 6];
+  const default_rank = available_ranks[0];
+  const [rank, setRank] = useState(default_rank);
   const before_exam = true;
 
   function reset_status() {
     setVocal(0);
     setDance(initial_status);
     setVisual(initial_status);
+    setRank(default_rank);
     ["ocr-base", "ocr-vocal", "ocr-dance", "ocr-visual"].forEach((id) => {
       const img_element = document.getElementById(id) as HTMLImageElement;
       img_element.src = "";
@@ -76,6 +89,32 @@ export default function ReverseCalcPage() {
                       focused
                       color="warning"
                     />
+                  </Box>
+                </Box>
+              </Grid>
+              <Grid item sm={4} xs={12}>
+                <Box display={"flex"} justifyContent={"center"}>
+                  <Box sx={{ width: "90%", maxWidth: 150 }}>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        最終試験順位
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={rank.toString()}
+                        label="最終試験順位"
+                        onChange={(e): void => {
+                          setRank(Number(e.target.value));
+                        }}
+                      >
+                        {available_ranks.map((e) => (
+                          <MenuItem value={e} key={e}>
+                            {e}位
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Box>
                 </Box>
               </Grid>
