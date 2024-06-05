@@ -1,10 +1,10 @@
 import "./App.css";
-import ReverseCalcPage from "./pages/ReverseCalcPage";
+import CalcPage from "./pages/CalcPage";
 
 function App() {
   return (
     <>
-      <ReverseCalcPage />
+      <CalcPage />
     </>
   );
 }

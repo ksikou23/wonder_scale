@@ -6,7 +6,7 @@ import reverse_calc, {
   SCORE_C,
   SCORE_C_PLUS,
   SCORE_S,
-} from "../util/reverse_calc";
+} from "../util/score_calc";
 
 export default function ReverseCalc(props: {
   vocal: number;

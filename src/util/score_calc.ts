@@ -69,3 +69,71 @@ export default function reverse_calc(
     return Math.ceil((exam_score - threshold[4]) / 0.01) + 40000;
   }
 }
+
+export function forward_calc(
+  vocal: number,
+  dance: number,
+  visual: number,
+  rank: number,
+  before_exam: boolean,
+  exam_point: number
+) {
+  let status_sum = vocal + dance + visual;
+  if (before_exam) {
+    status_sum += get_status_bonus(vocal, rank);
+    status_sum += get_status_bonus(dance, rank);
+    status_sum += get_status_bonus(visual, rank);
+  }
+  const status_score = Math.floor(status_sum * 2.3);
+
+  const rank_score = get_rank_score(rank);
+
+  const exam_score_lower = [
+    5000 * 0.3, // 1500
+    5000 * 0.3 + 5000 * 0.15, // 2250
+    5000 * 0.3 + 5000 * 0.15 + 10000 * 0.08, // 3050
+    5000 * 0.3 + 5000 * 0.15 + 10000 * 0.08 + 10000 * 0.04, // 3450
+    5000 * 0.3 + 5000 * 0.15 + 10000 * 0.08 + 10000 * 0.04 + 10000 * 0.02, // 3650
+  ];
+
+  let exam_score = 0;
+  if (exam_point <= 5000) {
+    // 1pt-5000pt
+    exam_score = Math.floor(exam_point * 0.3);
+  } else if (exam_point <= 10000) {
+    // 5001pt-10000pt
+    exam_score = Math.floor((exam_point - 5000) * 0.15 + exam_score_lower[0]);
+  } else if (exam_point <= 20000) {
+    // 10001pt-20000pt
+    exam_score = Math.floor((exam_point - 10000) * 0.08 + exam_score_lower[1]);
+  } else if (exam_point <= 30000) {
+    // 20001pt-30000pt
+    exam_score = Math.floor((exam_point - 20000) * 0.04 + exam_score_lower[2]);
+  } else if (exam_point <= 40000) {
+    // 30001pt-40000pt
+    exam_score = Math.floor((exam_point - 30000) * 0.02 + exam_score_lower[3]);
+  } else {
+    // 40001pt-
+    exam_score = Math.floor((exam_point - 40000) * 0.01 + exam_score_lower[4]);
+  }
+
+  return status_score + rank_score + exam_score;
+}
+
+export function get_rank(score: number) {
+  if (score < SCORE_C) {
+    return "C";
+  } else if (score < SCORE_C_PLUS) {
+    return "C+";
+  } else if (score < SCORE_B) {
+    return "B";
+  } else if (score < SCORE_B_PLUS) {
+    return "B+";
+  } else if (score < SCORE_A) {
+    return "A";
+  } else if (score < SCORE_A_PLUS) {
+    return "A+";
+  } else {
+    return "S";
+  }
+}
