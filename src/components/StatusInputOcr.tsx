@@ -83,7 +83,7 @@ function ocr_screenshot(
 
     // ocr definition
     const crop_width = Math.floor(image.width * 0.17);
-    const shift_x = Math.floor(image.width * 0.015);
+    const shift_x = Math.floor(image.width * 0.022);
     const crop_height = Math.floor((position.visual.y - position.dance.y) / 2);
     const plus_y = Math.min(20, Math.floor(image.height * 0.01));
     const ocr_infos = [
