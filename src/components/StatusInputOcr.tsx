@@ -9,6 +9,7 @@ import {
   vocal_color,
 } from "../util/color";
 import get_hard_coded_position from "../util/position";
+import OcrHelp from "./OcrHelp";
 
 export default function StatusInputOcr(props: {
   setVocal: React.Dispatch<React.SetStateAction<number>>;
@@ -30,6 +31,7 @@ export default function StatusInputOcr(props: {
           hidden
         />
       </Button>
+      <OcrHelp />
       <div className="ocr-debug" style={{ paddingTop: "1em" }}>
         <img id="ocr-base" width="400" hidden />
         <Box display={"flex"} justifyContent={"center"}>
