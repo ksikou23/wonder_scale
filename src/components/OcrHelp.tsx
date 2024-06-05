@@ -45,7 +45,9 @@ export default function OcrHelp() {
         </Typography>
 
         <Box justifyContent="center" display="flex" padding={"2em"}>
-          <img src="/images/ocr-sample.webp" alt="ocr-sample" width="70%" />
+          <Box width={"70%"} maxWidth={300}>
+            <img src="/images/ocr-sample.webp" alt="ocr-sample" width="100%" />
+          </Box>
         </Box>
       </Popover>
     </div>
