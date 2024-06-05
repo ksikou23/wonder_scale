@@ -2,11 +2,11 @@ import { Box, Button, Grid } from "@mui/material";
 import Image from "image-js";
 import Tesseract from "tesseract.js";
 import {
-  dance_color,
-  equal_color,
-  near_color,
-  visual_color,
-  vocal_color,
+  dance_colors,
+  equal_colors,
+  near_colors,
+  visual_colors,
+  vocal_colors,
 } from "../util/color";
 import get_hard_coded_position from "../util/position";
 import OcrHelp from "./OcrHelp";
@@ -214,17 +214,17 @@ async function get_position(image: Image) {
         g: image_data.data[index + 1],
         b: image_data.data[index + 2],
       };
-      if (!break_vocal && equal_color(index_color, vocal_color)) {
+      if (!break_vocal && equal_colors(index_color, vocal_colors)) {
         lower_left_vocal.x = x;
         lower_left_vocal.y = y;
         break_vocal = true;
       }
-      if (!break_dance && equal_color(index_color, dance_color)) {
+      if (!break_dance && equal_colors(index_color, dance_colors)) {
         lower_left_dance.x = x;
         lower_left_dance.y = y;
         break_dance = true;
       }
-      if (!break_visual && equal_color(index_color, visual_color)) {
+      if (!break_visual && equal_colors(index_color, visual_colors)) {
         lower_left_visual.x = x;
         lower_left_visual.y = y;
         break_visual = true;
@@ -248,17 +248,17 @@ async function get_position(image: Image) {
         g: image_data.data[index + 1],
         b: image_data.data[index + 2],
       };
-      if (!break_vocal && near_color(index_color, vocal_color)) {
+      if (!break_vocal && near_colors(index_color, vocal_colors)) {
         lower_left_vocal.x = x;
         lower_left_vocal.y = y;
         break_vocal = true;
       }
-      if (!break_dance && near_color(index_color, dance_color)) {
+      if (!break_dance && near_colors(index_color, dance_colors)) {
         lower_left_dance.x = x;
         lower_left_dance.y = y;
         break_dance = true;
       }
-      if (!break_visual && near_color(index_color, visual_color)) {
+      if (!break_visual && near_colors(index_color, visual_colors)) {
         lower_left_visual.x = x;
         lower_left_visual.y = y;
         break_visual = true;
