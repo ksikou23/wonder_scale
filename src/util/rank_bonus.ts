@@ -3,17 +3,11 @@ export function get_status_bonus(rank: number) {
     case 1:
       return 30;
     case 2:
-      return 0; //TODO
+      return 20;
     case 3:
-      return 0; //TODO
-    case 4:
-      return 0; //TODO
-    case 5:
-      return 0; //TODO
-    case 6:
-      return 0; //TODO
+      return 10;
     default:
-      return null as unknown as number;
+      return 0;
   }
 }
 

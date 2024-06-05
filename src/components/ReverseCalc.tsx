@@ -3,8 +3,10 @@ import reverse_calc, {
   SCORE_A_PLUS,
   SCORE_B,
   SCORE_B_PLUS,
+  SCORE_C,
+  SCORE_C_PLUS,
   SCORE_S,
-} from "../util/reverse_calc";
+} from "../util/score_calc";
 
 export default function ReverseCalc(props: {
   vocal: number;
@@ -19,6 +21,8 @@ export default function ReverseCalc(props: {
     { rank: "A", calc_text: get_reverse_calc_text(props, SCORE_A) },
     { rank: "B+", calc_text: get_reverse_calc_text(props, SCORE_B_PLUS) },
     { rank: "B", calc_text: get_reverse_calc_text(props, SCORE_B) },
+    { rank: "C+", calc_text: get_reverse_calc_text(props, SCORE_C_PLUS) },
+    { rank: "C", calc_text: get_reverse_calc_text(props, SCORE_C) },
   ];
   return (
     <div className="ReverseCalc" style={{ paddingTop: "1em" }}>
